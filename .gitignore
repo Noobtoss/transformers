@@ -4,6 +4,7 @@ dataset/
 datasets/
 *results/
 results*/
+runs/*
 logs/
 model/
 checkpoints/
