@@ -10,7 +10,7 @@ def make_parser():
     parser = argparse.ArgumentParser(description="YOLOX ONNX Deployment")
     parser.add_argument("--ckpt_dir",
                         type=str,
-                        default="/Users/noobtoss/code-nexus/transformers/checkpoints/segformer_holz"
+                        default="/Users/noobtoss/code-nexus/transformers/checkpoints/segformer_holz00"
                         )
     parser.add_argument("--img_path",
                         type=str,
