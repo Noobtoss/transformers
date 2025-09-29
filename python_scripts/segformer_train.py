@@ -30,7 +30,7 @@ def main():
     args = make_parser().parse_args()
     data_dir = args.data_dir
     NUM_CLASSES = 6  # Replace with your number of classes
-    RUN_NAME = f"segformer-{os.path.basename(os.path.normpath(data_dir))}-{datetime.datetime.now().isoformat().replace(':', '_')}"
+    RUN_NAME = f"segformer_{os.path.basename(os.path.normpath(data_dir))}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
     print(RUN_NAME)
     OUT_DIR = f"../runs/{RUN_NAME}"
 
@@ -148,7 +148,7 @@ def main():
         learning_rate=5e-5,
         per_device_train_batch_size=1,
         per_device_eval_batch_size=1,
-        num_train_epochs=20,
+        num_train_epochs=2,
         save_steps=5,
         eval_steps=5,
         logging_steps=100,

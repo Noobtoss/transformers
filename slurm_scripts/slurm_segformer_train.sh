@@ -10,8 +10,7 @@
 #SBATCH --mem=32G                # RAM pro CPU Kern #20G #32G #64G
 
 BASE_DIR=/nfs/scratch/staff/schmittth/code-nexus/transformers
-DATA_DIR=${1:datasets/holz00}
-CKPT=${2:-models/yolox_x.pth}
+DATA_DIR=${1:-datasets/holz00}
 
 module purge
 module load python/anaconda3
