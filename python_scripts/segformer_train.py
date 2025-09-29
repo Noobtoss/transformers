@@ -31,7 +31,7 @@ def main():
     NUM_CLASSES = 6  # Replace with your number of classes
     RUN_NAME = f"segformer_{os.path.basename(os.path.normpath(data_dir))}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
     print(RUN_NAME)
-    OUT_DIR = f"../runs/{RUN_NAME}"
+    OUT_DIR = f"runs/{RUN_NAME}"
 
     # ------------------------------
     # 1. Load ADE20K-style dataset
@@ -44,11 +44,6 @@ def main():
 
     train_ds = load_ade20k_dataset(f"{data_dir}/train/images", f"{data_dir}/train/masks")
     val_ds = load_ade20k_dataset(f"{data_dir}/test/images", f"{data_dir}/test/masks")
-
-    # Split into train/validation
-    # dataset = dataset.train_test_split(test_size=0.2)
-    # train_ds = dataset["train"]
-    # val_ds = dataset["test"]
 
     print(train_ds)
     print(val_ds)
@@ -143,7 +138,7 @@ def main():
         learning_rate=5e-5,
         per_device_train_batch_size=1,
         per_device_eval_batch_size=1,
-        num_train_epochs=2,
+        num_train_epochs=100,
         save_steps=500,
         eval_steps=500,
         logging_steps=200,
