@@ -3,7 +3,6 @@ import csv
 import argparse
 import torch
 from torch import nn
-import numpy as np
 from PIL import Image
 from datasets import Dataset
 import evaluate
@@ -57,20 +56,16 @@ def main():
     # ------------------------------
     # 2. Preprocessing
     # ------------------------------
-    feature_extractor = SegformerImageProcessor.from_pretrained("nvidia/segformer-b0-finetuned-ade-512-512")
+    image_processor = SegformerImageProcessor.from_pretrained("nvidia/segformer-b0-finetuned-ade-512-512")
 
-    def preprocess(example):
-        image = Image.open(example["image"]).convert("RGB")
-        mask = Image.open(example["mask"])
-        mask_tensor = torch.tensor(np.array(mask), dtype=torch.long)
-        encoded = feature_extractor(images=image, return_tensors="pt")
-        encoded["labels"] = mask_tensor
-        # Flatten tensors for Trainer compatibility
-        encoded = {k: v.squeeze() if isinstance(v, torch.Tensor) else v for k, v in encoded.items()}
+    def preprocess(batch):
+        images = [Image.open(img).convert("RGB") for img in batch["image"]]
+        labels = [Image.open(mask).convert("L") for mask in batch["mask"]]
+        encoded = image_processor(images, labels)
         return encoded
 
-    train_ds = train_ds.map(preprocess)
-    val_ds = val_ds.map(preprocess)
+    train_ds.set_transform(preprocess)  #  train_ds = train_ds.map(preprocess)
+    val_ds.set_transform(preprocess)  # val_ds = val_ds.map(preprocess)
 
     # ------------------------------
     # 3. Load SegFormer model
@@ -106,7 +101,7 @@ def main():
                 references=labels,
                 num_labels=NUM_CLASSES,
                 ignore_index=0,
-                reduce_labels=feature_extractor.do_reduce_labels,
+                reduce_labels=image_processor.do_reduce_labels,
             )
 
             # add per category metrics as individual key-value pairs
@@ -149,11 +144,12 @@ def main():
         per_device_train_batch_size=1,
         per_device_eval_batch_size=1,
         num_train_epochs=2,
-        save_steps=5,
-        eval_steps=5,
-        logging_steps=100,
+        save_steps=500,
+        eval_steps=500,
+        logging_steps=200,
         weight_decay=0.01,
         save_total_limit=2,
+        remove_unused_columns=False,
     )
 
     trainer = Trainer(
@@ -161,7 +157,7 @@ def main():
         args=training_args,
         train_dataset=train_ds,
         eval_dataset=val_ds,
-        processing_class=feature_extractor,
+        processing_class=image_processor,
         compute_metrics=compute_metrics,
         callbacks=[SaveMetricsCallback()]  # <--- here
     )
